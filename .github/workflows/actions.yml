@@ -32,6 +32,7 @@ jobs:
             ghcr.io/yellowmamba/python3.9
           # generate Docker tags based on the following events/attributes
           tags: |
+            type=semver,pattern={{version}}
             type=sha
 
       - name: Set up QEMU
