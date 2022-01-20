@@ -1,7 +1,5 @@
 FROM amazonlinux:2
 
-ARG ARCH
-
 RUN yum update -y \
     && yum install -y curl zip unzip wget tar gzip make which jq openssh-clients git -y \
     && yum install -y gcc openssl-devel bzip2-devel libffi-devel \
@@ -16,8 +14,8 @@ RUN wget https://www.python.org/ftp/python/3.9.10/Python-3.9.10.tgz \
 
 RUN pip3.9 install -U pip pipenv boto3
 
-# install awscli
-RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-${ARCH}.zip" -o "awscliv2.zip" \
+# install awsclis
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-$(uname -m).zip" -o "awscliv2.zip" \
     && unzip awscliv2.zip \
     && ./aws/install --update
 
