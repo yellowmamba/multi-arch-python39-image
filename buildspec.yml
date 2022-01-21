@@ -7,9 +7,10 @@ phases:
   build:
     commands:
       - echo Building an image $IMAGE_TAGS for `uname -m`
-      - docker build -t python39 .
+      # - docker build -t python39 .
       - |
         IFS=' ' read -r -a tags <<< "$IMAGE_TAGS"
+        echo "${tags[@]}"
         for tag in "${tags[@]}"
         do
             echo building $tag
