@@ -1,9 +1,16 @@
 version: 0.2
 
+env:
+  secrets-manager:
+    github_pat: github_pat
+
 phases:
   install: 
     runtime-versions: 
       python: 3.9
+  pre_build:
+    commands:
+      - echo $github_pat | docker login ghcr.io -u yellowmamba --password-stdin
   build:
     commands:
       - echo Building an image $IMAGE_TAGS for `uname -m`
@@ -14,6 +21,7 @@ phases:
         do
             echo building $tag
             docker tag python39 $tag
+            docker push $tag
         done
       - docker images
 
