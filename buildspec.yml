@@ -6,8 +6,7 @@ phases:
       python: 3.9
   build:
     commands:
-      - echo Build docker image for `uname -m`
-      - echo `docker version`
+      - echo Building an image $IMAGE_TAGS for `uname -m`
   post_build:
     commands:
       - echo Build completed!
