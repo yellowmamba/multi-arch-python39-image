@@ -7,6 +7,15 @@ phases:
   build:
     commands:
       - echo Building an image $IMAGE_TAGS for `uname -m`
+      - docker build -t python39 .
+      - |
+        IFS=', ' read -r -a tags <<< "$IMAGE_TAGS"
+        for tag in "${tags[@]}"
+        do
+            docker tag python39 $tag
+        done
+      - docker images 
+
   post_build:
     commands:
       - echo Build completed!
