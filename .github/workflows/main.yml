@@ -26,6 +26,8 @@ jobs:
         id: meta
         uses: docker/metadata-action@v3
         with:
+          images: |
+            ghcr.io/yellowmamba/python3.9
           # generate Docker tags based on the following events/attributes
           tags: |
             type=schedule,pattern={{date 'YYYYMMDD'}}
