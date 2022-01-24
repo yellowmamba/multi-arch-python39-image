@@ -16,23 +16,14 @@ jobs:
   prepare:
     runs-on: ubuntu-latest
     outputs:
-      image_version: ${{ steps.meta.outputs.version }}
       image_tags: ${{ steps.meta.outputs.tags }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
       
-      - name: Docker meta
-        id: meta
-        uses: docker/metadata-action@v3
-        with:
-          images: |
-            multi-arch-python3.9
-          # generate Docker tags based on the following events/attributes
-          tags: |
-            type=schedule,pattern={{date 'YYYYMMDD'}}
-            type=ref,event=branch
-            type=sha
+      - name: Get date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y%m%d')"
 
   build-x86:
     runs-on: ubuntu-latest
@@ -51,14 +42,10 @@ jobs:
           buildspec-override: buildspec.yml
           env-vars-for-codebuild: |
             ARCH,
-            ECR_REPO,
-            AWS_ACCOUNT_ID,
-            AWS_DEFAULT_REGION
+            ECR_REPO
         env:
           ARCH: amd64
           ECR_REPO: multi-arch-python3.9
-          AWS_ACCOUNT_ID: 168942669170
-          AWS_DEFAULT_REGION: ap-southeast-2
 
   build-graviton2:
     runs-on: ubuntu-latest
@@ -77,14 +64,10 @@ jobs:
           buildspec-override: buildspec.yml
           env-vars-for-codebuild: |
             ARCH,
-            ECR_REPO,
-            AWS_ACCOUNT_ID,
-            AWS_DEFAULT_REGION
+            ECR_REPO
         env:
           ARCH: arm64
           ECR_REPO: multi-arch-python3.9
-          AWS_ACCOUNT_ID: 168942669170
-          AWS_DEFAULT_REGION: ap-southeast-2
   
   create-image-manifest:
     runs-on: ubuntu-latest
@@ -102,12 +85,8 @@ jobs:
           project-name: docker-build-graviton2
           buildspec-override: buildspec.yml
           env-vars-for-codebuild: |
-            ARCH,
             ECR_REPO,
-            AWS_ACCOUNT_ID,
-            AWS_DEFAULT_REGION
+            RELEASE_DATE
         env:
           ECR_REPO: multi-arch-python3.9
-          AWS_ACCOUNT_ID: 168942669170
-          AWS_DEFAULT_REGION: ap-southeast-2
-          IMAGE_TAG: ${{ needs.prepare.outputs.image_tags }}
+          RELEASE_DATE: ${{ steps.date.outputs.date }}

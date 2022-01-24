@@ -13,13 +13,13 @@ phases:
             - echo Build started on `date`
             - echo Building the Docker manifest...   
             - export DOCKER_CLI_EXPERIMENTAL=enabled       
-            - docker manifest create $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPO $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPO:arm64 $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPO:amd64
-            - docker manifest annotate --arch arm64 $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPO $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPO:arm64
-            - docker manifest annotate --arch amd64 $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPO $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPO:amd64
+            - docker manifest create public.ecr.aws/x2n1n8d5/$ECR_REPO:$RELEASE_DATE public.ecr.aws/x2n1n8d5/$ECR_REPO:arm64 public.ecr.aws/x2n1n8d5/$ECR_REPO:amd64
+            - docker manifest annotate --arch arm64 public.ecr.aws/x2n1n8d5/$ECR_REPO public.ecr.aws/x2n1n8d5/$ECR_REPO:arm64
+            - docker manifest annotate --arch amd64 public.ecr.aws/x2n1n8d5/$ECR_REPO public.ecr.aws/x2n1n8d5/$ECR_REPO:amd64
 
     post_build:
         commands:
             - echo Build completed on `date`
             - echo Pushing the Docker image...
-            - docker manifest push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPO
-            - docker manifest inspect $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPO
+            - docker manifest push public.ecr.aws/x2n1n8d5/$ECR_REPO:RELEASE_DATE
+            - docker manifest inspect public.ecr.aws/x2n1n8d5/$ECR_REPO:RELEASE_DATE

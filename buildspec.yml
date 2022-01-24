@@ -10,8 +10,8 @@ phases:
   build:
     commands:
       - docker build -t $ECR_REPO:$ARCH .
-      - docker tag $ECR_REPO:$ARCH $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPO:$ARCH
+      - docker tag $ECR_REPO:$ARCH public.ecr.aws/x2n1n8d5/$ECR_REPO:$ARCH
   post_build:
     commands:
       - echo pushing to ECR...
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPO:$ARCH
+      - docker push public.ecr.aws/x2n1n8d5/$ECR_REPO:$ARCH
