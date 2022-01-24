@@ -31,14 +31,11 @@ jobs:
           # generate Docker tags based on the following events/attributes
           tags: |
             type=schedule,pattern={{date 'YYYYMMDD'}}
-            type=raw,value=3.9
-            type=ref,event=branch
   
   build-x86:
     runs-on: ubuntu-latest
     needs: prepare
     steps:
-
       - name: Obtain AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -51,18 +48,20 @@ jobs:
           project-name: docker-build-x86
           buildspec-override: buildspec.yml
           env-vars-for-codebuild: |
-            IMAGE_TAGS
+            ARCH,
+            ECR_REPO,
+            AWS_ACCOUNT_ID,
+            AWS_DEFAULT_REGION
         env:
-          IMAGE_TAGS: ${{ needs.prepare.outputs.image_tags }}
+          ARCH: amd64
+          ECR_REPO: multi-arch-python3.9
+          AWS_ACCOUNT_ID: 168942669170
+          AWS_DEFAULT_REGION: ap-southeast-2
 
   build-graviton2:
     runs-on: ubuntu-latest
     needs: prepare
     steps:
-      - name: Debug
-        run: |
-          echo docker image version is ${{ needs.prepare.outputs.image_version }}
-
       - name: Obtain AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -75,6 +74,38 @@ jobs:
           project-name: docker-build-graviton2
           buildspec-override: buildspec.yml
           env-vars-for-codebuild: |
-            IMAGE_TAGS
+            ARCH,
+            ECR_REPO,
+            AWS_ACCOUNT_ID,
+            AWS_DEFAULT_REGION
         env:
-          IMAGE_TAGS: ${{ needs.prepare.outputs.image_tags }}
+          ARCH: arm64
+          ECR_REPO: multi-arch-python3.9
+          AWS_ACCOUNT_ID: 168942669170
+          AWS_DEFAULT_REGION: ap-southeast-2
+  
+  create-image-manifest:
+    runs-on: ubuntu-latest
+    needs: [build-x86, build-graviton2]
+    steps:
+      - name: Obtain AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::168942669170:role/github-codebuild-role
+          aws-region: ap-southeast-2
+
+      - name: Launch CodeBuild
+        uses: aws-actions/aws-codebuild-run-build@v1
+        with:
+          project-name: docker-build-graviton2
+          buildspec-override: buildspec.yml
+          env-vars-for-codebuild: |
+            ARCH,
+            ECR_REPO,
+            AWS_ACCOUNT_ID,
+            AWS_DEFAULT_REGION
+        env:
+          ECR_REPO: multi-arch-python3.9
+          AWS_ACCOUNT_ID: 168942669170
+          AWS_DEFAULT_REGION: ap-southeast-2
+          IMAGE_TAG: ${{ needs.prepare.outputs.image_tags }}

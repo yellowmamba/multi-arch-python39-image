@@ -1,30 +1,17 @@
 version: 0.2
 
-env:
-  secrets-manager:
-    github_pat: github_pat
-
 phases:
   install: 
     runtime-versions: 
       python: 3.9
   pre_build:
     commands:
-      - echo $github_pat | docker login ghcr.io -u yellowmamba --password-stdin
+      - aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION
   build:
     commands:
-      - echo Building an image $IMAGE_TAGS for `uname -m`
-      - docker build -t python39 .
-      - |
-        tags=($IMAGE_TAGS)
-        for tag in "${tags[@]}"
-        do
-            echo building $tag
-            docker tag python39 $tag
-            docker push $tag
-        done
-      - docker images
-
+      - docker build -t $ECR_REPO:$ARCH .
+      - docker tag $ECR_REPO:$ARCH $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPO:$ARCH
   post_build:
     commands:
-      - echo Build completed!
+      - echo pushing to ECR...
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPO:$ARCH
