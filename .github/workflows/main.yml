@@ -82,8 +82,7 @@ jobs:
       - name: Launch CodeBuild
         uses: aws-actions/aws-codebuild-run-build@v1
         with:
-          project-name: docker-build-graviton2
-          buildspec-override: buildspec.yml
+          project-name: docker-manifest
           env-vars-for-codebuild: |
             ECR_REPO,
             RELEASE_DATE
