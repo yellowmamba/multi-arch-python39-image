@@ -18,5 +18,5 @@ phases:
         commands:
             - echo Build completed on `date`
             - echo Pushing the Docker image...
-            - docker manifest push public.ecr.aws/x2n1n8d5/$ECR_REPO:RELEASE_DATE
-            - docker manifest inspect public.ecr.aws/x2n1n8d5/$ECR_REPO:RELEASE_DATE
+            - docker manifest push public.ecr.aws/x2n1n8d5/$ECR_REPO:$RELEASE_DATE
+            - docker manifest inspect public.ecr.aws/x2n1n8d5/$ECR_REPO:$RELEASE_DATE
